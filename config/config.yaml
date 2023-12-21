@@ -1,0 +1,17 @@
+postgres:
+  host: 'localhost'
+  port: '5588'
+  user: 'postgres'
+  password: 'RachelRoth'
+  name: 'main'
+
+http:
+  host: 'localhost'
+  port: '8080'
+
+nats:
+  host: 'localhost'
+  port: '4222'
+  cluster: 'test-cluster'
+  client: "event-listener"
+  topic: "main-chanel"
