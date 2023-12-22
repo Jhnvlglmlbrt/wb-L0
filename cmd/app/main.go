@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/Jhnvlglmlbrt/wb-order/config"
+	"github.com/Jhnvlglmlbrt/wb-order/internal/app"
 )
 
 func main() {
@@ -12,5 +12,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error at starting: %v", err)
 	}
-	fmt.Println(cfg)
+
+	app.Run(cfg)
 }
