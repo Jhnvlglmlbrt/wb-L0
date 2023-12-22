@@ -73,3 +73,9 @@ func (ns *Nats) Subscribe() (*models.Order, error) {
 		return nil, stan.ErrTimeout
 	}
 }
+
+func (ns *Nats) Close() {
+	if ns.nc != nil {
+		ns.nc.Close()
+	}
+}
