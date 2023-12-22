@@ -12,6 +12,6 @@ http:
 nats:
   host: 'localhost'
   port: '4222'
-  cluster: 'test-cluster'
+  cluster: 'wb-cluster'
   client: "event-listener"
   topic: "main-chanel"
