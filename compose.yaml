@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'RachelRoth'
-      POSTGRES_DB: 'main'
+      POSTGRES_DB: 'wb'
     ports:
       - '5588:5432'
     volumes:
