@@ -32,6 +32,7 @@ type (
 		Cluster string `env-required:"true" yaml:"cluster" env:"NATS_CLUSTER"`
 		Client  string `env-required:"true" yaml:"client" env:"NATS_CLIENT"`
 		Topic   string `env-required:"true" yaml:"topic" env:"NATS_TOPIC"`
+		Durable string `env-required:"true" yaml:"durable" env:"NATS_DURABLE"`
 	}
 )
 

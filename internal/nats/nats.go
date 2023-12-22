@@ -61,7 +61,7 @@ func (ns *Nats) Subscribe() (*models.Order, error) {
 		}
 
 		ch <- &rec
-	})
+	}, stan.DurableName(ns.config.Durable))
 	if err != nil {
 		return nil, fmt.Errorf("error at subscription: %v", err)
 	}
