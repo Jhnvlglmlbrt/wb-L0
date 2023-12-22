@@ -19,7 +19,7 @@ type repo struct {
 	pool *pgxpool.Pool
 }
 
-func NewRepository(pool *pgxpool.Pool) *repo {
+func NewRepository(pool *pgxpool.Pool) Repository {
 	return &repo{
 		pool: pool,
 	}
