@@ -3,7 +3,7 @@ postgres:
   port: '5588'
   user: 'postgres'
   password: 'RachelRoth'
-  name: 'main'
+  name: 'wb'
 
 http:
   host: 'localhost'
