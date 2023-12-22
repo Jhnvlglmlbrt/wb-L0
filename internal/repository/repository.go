@@ -43,7 +43,11 @@ func (r *repo) CreateTable() error {
 			date_created VARCHAR(255),
 			oof_shard VARCHAR(255)
 		)
+		
 	`)
+	if err != nil {
+		log.Fatalf("Error creating table: %v", err)
+	}
 	return err
 }
 
@@ -56,17 +60,17 @@ func (r *repo) SaveOrder(order models.Order) error {
 }
 
 func (r *repo) GetAll() ([]models.Order, error) {
-	res, err := r.pool.Query(context.Background(), `SELECT * FROM main`)
+	rows, err := r.pool.Query(context.Background(), `SELECT * FROM main`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all orders: %w", err)
 	}
 
-	defer res.Close()
+	defer rows.Close()
 
 	var orders []models.Order
-	for res.Next() {
+	for rows.Next() {
 		var queryOrder models.Order
-		if err := res.Scan(
+		if err := rows.Scan(
 			&queryOrder.OrderUid,
 			&queryOrder.TrackNumber,
 			&queryOrder.Entry,
@@ -88,7 +92,7 @@ func (r *repo) GetAll() ([]models.Order, error) {
 		orders = append(orders, queryOrder)
 	}
 
-	if err := res.Err(); err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error at scanning orders: %w", err)
 	}
 	return orders, nil
