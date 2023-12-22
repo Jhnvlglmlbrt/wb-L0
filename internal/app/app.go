@@ -5,13 +5,18 @@ import (
 	"log"
 
 	"github.com/Jhnvlglmlbrt/wb-order/config"
+	"github.com/Jhnvlglmlbrt/wb-order/internal/nats"
 	"github.com/Jhnvlglmlbrt/wb-order/internal/repository"
 	"github.com/Jhnvlglmlbrt/wb-order/package/postgres"
 )
 
 func Run(cfg *config.Config) {
 
-	// Nats connection
+	ns, err := nats.NewNats(&cfg.Nats)
+	if err != nil {
+		log.Fatalf("Error creating nats client: %v", err)
+	}
+	defer ns.Close()
 
 	fmt.Println("Nats server started, connection registered")
 
