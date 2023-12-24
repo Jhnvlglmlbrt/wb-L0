@@ -5,8 +5,11 @@ import (
 	"log"
 
 	"github.com/Jhnvlglmlbrt/wb-order/config"
+	"github.com/Jhnvlglmlbrt/wb-order/internal/cache"
 	"github.com/Jhnvlglmlbrt/wb-order/internal/nats"
+	controller "github.com/Jhnvlglmlbrt/wb-order/internal/orders"
 	"github.com/Jhnvlglmlbrt/wb-order/internal/repository"
+	"github.com/Jhnvlglmlbrt/wb-order/package/http"
 	"github.com/Jhnvlglmlbrt/wb-order/package/postgres"
 )
 
@@ -33,15 +36,19 @@ func Run(cfg *config.Config) {
 		log.Fatalf("Error at table creation: %v", err)
 	}
 
-	// Cache initialization
-	// preload cache
+	orderCache := cache.NewCache(repo)
+	orderCache.Preload()
 
 	// publish info
 
 	// subscribe and save order in db and in cache
 
-	// server init
-	// controller init
+	httpServer := http.NewServer(&cfg.HTTP)
+	orderController := controller.NewController(orderCache)
+	servertStart := httpServer.Start(orderController.GetOrder, orderController.GetAllOrders)
+	if servertStart != nil {
+		log.Fatalf("Error at server starting: %v", servertStart)
+	}
 	// get order, all orders, create order
 	// server start
 }
