@@ -12,7 +12,7 @@ http:
 nats:
   host: 'localhost'
   port: '4222'
-  cluster: 'wb-cluster'
+  cluster: 'test-cluster'
   client: "event-listener"
   topic: "main-chanel"
   durable: "my-durable"
