@@ -13,7 +13,7 @@ type Server struct {
 func NewServer(cfg *config.HTTP) *Server {
 	return &Server{
 		echo: echo.New(),
-		port: cfg.Port,
+		port: ":" + cfg.Port,
 	}
 }
 
