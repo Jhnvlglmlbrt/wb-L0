@@ -17,8 +17,10 @@ func NewServer(cfg *config.HTTP) *Server {
 	}
 }
 
-func (s *Server) Start(orderHandler echo.HandlerFunc, allOrdersHandler echo.HandlerFunc) error {
-	s.echo.GET("/:order", orderHandler)
-	s.echo.GET("/", allOrdersHandler)
+func (s *Server) Start(handlePage echo.HandlerFunc, handleGetData echo.HandlerFunc) error {
+	s.echo.GET("/", handlePage)
+	s.echo.GET("/order", handleGetData)
+	s.echo.Static("/", "static")
+
 	return s.echo.Start(s.port)
 }
