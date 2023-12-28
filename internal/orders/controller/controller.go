@@ -17,28 +17,6 @@ func NewController(c *cache.Cache) *CacheHandler {
 	}
 }
 
-// func (ch *CacheHandler) GetOrder(ctx echo.Context) error {
-// 	order := ch.c.GetOrderByUid(ctx.Param("order"))
-
-// 	or, err := json.MarshalIndent(order, "", "\t")
-// 	if err != nil {
-// 		return fmt.Errorf("error at marshaling respond: %v", err)
-// 	}
-
-// 	return ctx.JSONBlob(http.StatusOK, or)
-// }
-
-// func (ch *CacheHandler) GetAllOrders(ctx echo.Context) error {
-// 	order := ch.c.GetOrders()
-
-// 	or, err := json.MarshalIndent(order, "", "\t")
-// 	if err != nil {
-// 		return fmt.Errorf("error at marshaling respond: %v", err)
-// 	}
-
-// 	return ctx.JSONBlob(http.StatusOK, or)
-// }
-
 func (ch *CacheHandler) HandlePage(ctx echo.Context) error {
 	return ctx.File("static/order.html")
 }
