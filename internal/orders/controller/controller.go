@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/Jhnvlglmlbrt/wb-order/internal/cache"
@@ -10,33 +8,51 @@ import (
 )
 
 type CacheHandler struct {
-	c cache.Cache
+	c *cache.Cache
 }
 
-func NewController(c cache.Cache) *CacheHandler {
+func NewController(c *cache.Cache) *CacheHandler {
 	return &CacheHandler{
 		c: c,
 	}
 }
 
-func (ch *CacheHandler) GetOrder(ctx echo.Context) error {
-	order := ch.c.GetOrderByUid(ctx.Param("order"))
+// func (ch *CacheHandler) GetOrder(ctx echo.Context) error {
+// 	order := ch.c.GetOrderByUid(ctx.Param("order"))
 
-	or, err := json.MarshalIndent(order, "", "\t")
-	if err != nil {
-		return fmt.Errorf("error at marshaling respond: %v", err)
-	}
+// 	or, err := json.MarshalIndent(order, "", "\t")
+// 	if err != nil {
+// 		return fmt.Errorf("error at marshaling respond: %v", err)
+// 	}
 
-	return ctx.JSONBlob(http.StatusOK, or)
+// 	return ctx.JSONBlob(http.StatusOK, or)
+// }
+
+// func (ch *CacheHandler) GetAllOrders(ctx echo.Context) error {
+// 	order := ch.c.GetOrders()
+
+// 	or, err := json.MarshalIndent(order, "", "\t")
+// 	if err != nil {
+// 		return fmt.Errorf("error at marshaling respond: %v", err)
+// 	}
+
+// 	return ctx.JSONBlob(http.StatusOK, or)
+// }
+
+func (ch *CacheHandler) HandlePage(ctx echo.Context) error {
+	return ctx.File("static/order.html")
 }
 
-func (ch *CacheHandler) GetAllOrders(ctx echo.Context) error {
-	order := ch.c.GetOrders()
+func (ch *CacheHandler) HandleGetData(ctx echo.Context) error {
+	id := ctx.QueryParam("id")
 
-	or, err := json.MarshalIndent(order, "", "\t")
-	if err != nil {
-		return fmt.Errorf("error at marshaling respond: %v", err)
+	if id != "" {
+		order := ch.c.GetOrderByUid(id)
+
+		return ctx.JSON(http.StatusOK, order)
 	}
 
-	return ctx.JSONBlob(http.StatusOK, or)
+	orders := ch.c.GetOrders()
+
+	return ctx.JSON(http.StatusOK, orders)
 }
