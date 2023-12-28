@@ -67,14 +67,11 @@ func Run(cfg *config.Config) {
 		}
 	}()
 
-	// subscribe and save order in db and in cache
-
 	httpServer := http.NewServer(&cfg.HTTP)
 	orderController := controller.NewController(orderCache)
 	servertStart := httpServer.Start(orderController.HandlePage, orderController.HandleGetData)
 	if servertStart != nil {
 		log.Fatalf("Error at server starting: %v", servertStart)
 	}
-	// get order, all orders, create order
-	// server start
+
 }
