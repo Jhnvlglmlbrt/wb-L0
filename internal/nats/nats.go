@@ -76,33 +76,6 @@ func (ns *Nats) handleMessage(order *models.Order) {
 	ns.orderCache.Init(*order)
 }
 
-// func (ns *Nats) Subscribe() (*models.Order, error) {
-
-// 	var rec models.Order
-
-// 	ch := make(chan *models.Order)
-
-// 	_, err := ns.sc.Subscribe(ns.config.Topic, func(mes *stan.Msg) {
-
-// 		if err := json.Unmarshal(mes.Data, &rec); err != nil {
-// 			fmt.Printf("Error at Unmarshaling: %v\n", err)
-// 			return
-// 		}
-
-// 		ch <- &rec
-// 	}, stan.DurableName(ns.config.Durable))
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error at subscription: %v", err)
-// 	}
-
-// select {
-// case rec := <-ch:
-// 	return rec, nil
-// case <-time.After(60 * time.Second):
-// 	return nil, stan.ErrTimeout
-// }
-// }
-
 func (ns *Nats) Close() {
 	if ns.nc != nil {
 		ns.nc.Close()
