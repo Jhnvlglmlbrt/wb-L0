@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/Jhnvlglmlbrt/wb-order/config"
 	"github.com/Jhnvlglmlbrt/wb-order/internal/cache"
@@ -56,8 +57,14 @@ func Run(cfg *config.Config) {
 	// }()
 
 	go func() {
+		time.Sleep(5 * time.Second)
 		order := generator.GenerateOrder()
 		log.Println("Order generated")
+		err = order.Validate()
+		if err != nil {
+			fmt.Printf("Error at validating data : %v\n", err)
+			return
+		}
 		if err := ns.Publish(*order); err != nil {
 			log.Printf("Error at publishing: %v\n", err)
 		}
@@ -73,41 +80,6 @@ func Run(cfg *config.Config) {
 			log.Println("Nats client is nil. Skipping subscription.")
 		}
 	}()
-
-	// go func() {
-	// 	orderSubscriberTicker := time.NewTicker(15 * time.Second)
-	// 	defer orderSubscriberTicker.Stop()
-
-	// 	for range orderSubscriberTicker.C {
-	// 		if ns != nil {
-	// 			order, err := ns.Subscribe() // TODO: сделать что то с durable подпиской - ошибка "duplicate durable registration"
-	// 			if err != nil {
-	// 				log.Printf("Error subscribing: %v\n", err)
-	// 			} else {
-	// 				log.Printf("Received order: %+v\n", order)
-	// 				orderCache.Init(*order)
-	// 			}
-	// 		} else {
-	// 			log.Println("Nats client is nil. Skipping subscription.")
-	// 		}
-	// 	}
-	// }()
-
-	// go func() {
-	// 	for {
-	// 		if ns != nil {
-	// 			order, err := ns.Subscribe()
-	// 			if err != nil {
-	// 				log.Printf("Error subscribing: %v\n", err)
-	// 			} else {
-	// 				log.Printf("Received order: %+v\n", order)
-	// 				orderCache.Init(*order)
-	// 			}
-	// 		} else {
-	// 			log.Println("Nats client is nil. Skipping subscription.")
-	// 		}
-	// 	}
-	// }()
 
 	// subscribe and save order in db and in cache
 
