@@ -42,20 +42,6 @@ func Run(cfg *config.Config) {
 	defer ns.Close()
 	fmt.Println("Nats server started, connection registered")
 
-	// go func() {
-	// 	orderGeneratorTicker := time.NewTicker(30 * time.Second)
-	// 	defer orderGeneratorTicker.Stop()
-
-	// 	for range orderGeneratorTicker.C {
-	// 		order := generator.GenerateOrder()
-	// 		log.Println("Order generated")
-	// 		if err := ns.Publish(*order); err != nil {
-	// 			log.Printf("Error at publishing: %v\n", err)
-	// 		}
-	// 		log.Println("Order sent to nats")
-	// 	}
-	// }()
-
 	go func() {
 		time.Sleep(5 * time.Second)
 		order := generator.GenerateOrder()
