@@ -3,21 +3,24 @@ package nats
 import (
 	"encoding/json"
 	"fmt"
-	"time"
+	"log"
 
 	"github.com/Jhnvlglmlbrt/wb-order/config"
+	"github.com/Jhnvlglmlbrt/wb-order/internal/cache"
 	"github.com/Jhnvlglmlbrt/wb-order/internal/models"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/stan.go"
 )
 
 type Nats struct {
-	config *config.Nats
-	sc     stan.Conn
-	nc     *nats.Conn
+	config     *config.Nats
+	sc         stan.Conn
+	nc         *nats.Conn
+	sub        stan.Subscription
+	orderCache *cache.Cache
 }
 
-func NewNats(cfg *config.Nats) (*Nats, error) {
+func NewNats(cfg *config.Nats, orderCache *cache.Cache) (*Nats, error) {
 	natsUrl := fmt.Sprintf("nats://%s:%s", cfg.Host, cfg.Port)
 
 	nc, err := nats.Connect(natsUrl)
@@ -35,7 +38,7 @@ func NewNats(cfg *config.Nats) (*Nats, error) {
 		return nil, fmt.Errorf("cannot connect to stan: %v", err)
 	}
 
-	return &Nats{cfg, sc, nc}, nil
+	return &Nats{cfg, sc, nc, nil, orderCache}, nil
 }
 
 func (ns *Nats) Publish(message models.Order) error {
@@ -47,35 +50,64 @@ func (ns *Nats) Publish(message models.Order) error {
 	return ns.sc.Publish(ns.config.Topic, order)
 }
 
-func (ns *Nats) Subscribe() (*models.Order, error) {
-
+func (ns *Nats) InitSubscription() error {
 	var rec models.Order
 
-	ch := make(chan *models.Order)
+	if ns.sub == nil {
+		sub, err := ns.sc.Subscribe(ns.config.Topic, func(mes *stan.Msg) {
+			if err := json.Unmarshal(mes.Data, &rec); err != nil {
+				fmt.Printf("Error at Unmarshaling: %v\n", err)
+				return
+			}
 
-	_, err := ns.sc.Subscribe(ns.config.Topic, func(mes *stan.Msg) {
-
-		if err := json.Unmarshal(mes.Data, &rec); err != nil {
-			fmt.Printf("Error at Unmarshaling: %v\n", err)
-			return
+			ns.handleMessage(&rec)
+		}, stan.DurableName(ns.config.Durable))
+		if err != nil {
+			return fmt.Errorf("error at subscription: %v", err)
 		}
-
-		ch <- &rec
-	}, stan.DurableName(ns.config.Durable))
-	if err != nil {
-		return nil, fmt.Errorf("error at subscription: %v", err)
+		ns.sub = sub
 	}
 
-	select {
-	case rec := <-ch:
-		return rec, nil
-	case <-time.After(60 * time.Second):
-		return nil, stan.ErrTimeout
-	}
+	return nil
 }
+
+func (ns *Nats) handleMessage(order *models.Order) {
+	log.Printf("Received order: %+v\n", order)
+	ns.orderCache.Init(*order)
+}
+
+// func (ns *Nats) Subscribe() (*models.Order, error) {
+
+// 	var rec models.Order
+
+// 	ch := make(chan *models.Order)
+
+// 	_, err := ns.sc.Subscribe(ns.config.Topic, func(mes *stan.Msg) {
+
+// 		if err := json.Unmarshal(mes.Data, &rec); err != nil {
+// 			fmt.Printf("Error at Unmarshaling: %v\n", err)
+// 			return
+// 		}
+
+// 		ch <- &rec
+// 	}, stan.DurableName(ns.config.Durable))
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error at subscription: %v", err)
+// 	}
+
+// select {
+// case rec := <-ch:
+// 	return rec, nil
+// case <-time.After(60 * time.Second):
+// 	return nil, stan.ErrTimeout
+// }
+// }
 
 func (ns *Nats) Close() {
 	if ns.nc != nil {
 		ns.nc.Close()
+	}
+	if ns.sub != nil {
+		ns.sub.Close()
 	}
 }
