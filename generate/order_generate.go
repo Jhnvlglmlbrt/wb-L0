@@ -39,6 +39,12 @@ func main() {
 	order := generator.GenerateOrder()
 	log.Println("Order generated")
 
+	err = order.Validate()
+	if err != nil {
+		fmt.Printf("Error at validating data : %v\n", err)
+		return
+	}
+
 	if err := ns.Publish(*order); err != nil {
 		log.Printf("Error at publishing: %v\n", err)
 	} else {
