@@ -3,7 +3,7 @@
 <img src="https://pepy.tech/badge/rss-aggregator/month" alt="https://pepy.tech/project/rss-aggregator">
 <img src="https://img.shields.io/github/license/Jhnvlglmlbrt/rss-aggregator.svg" alt="https://github.com/Jhnvlglmlbrt/rss-aggregator/blob/master/LICENSE"> -->
 
-# ⚙️ Tg-bot
+# ⚙️ Wb-L0
 
 #### # Микросервис, отображающий данные о заказе:
 
